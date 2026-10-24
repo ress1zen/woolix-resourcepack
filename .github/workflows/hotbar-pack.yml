@@ -1,0 +1,24 @@
+name: Build hotbar HUD resource pack
+on:
+  push:
+    branches: [main]
+    paths: ['hud-hotbar/**', '.github/workflows/hotbar-pack.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  pack:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build existing pack with health and hunger font changes
+        run: python3 hud-hotbar/build.py
+      - name: Publish generated ZIP
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add WoolixPack-Hotbar.zip
+          if ! git diff --cached --quiet; then
+            git commit -m 'Build resource pack with health and hunger beside hotbar'
+            git push
+          fi
